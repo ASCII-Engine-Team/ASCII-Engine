@@ -5,9 +5,10 @@ import java.util.concurrent.ScheduledFuture;
 
 public class AnimationTemplate {
 	static Runnable drawFrame;
+	static Runnable updateState;
 
 	public static void main(String[] args) {
-		final int millisecondPause = Integer.parseInt(args[0]);
+		final int millisecondPause = 1000 / Constants.FPS;
 
 		// insert code to draw each frame here
 		drawFrame = () -> {};
@@ -19,7 +20,7 @@ public class AnimationTemplate {
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 		final Runnable makeFrame = () -> {
-			clearScreen();
+			Utility.clearScreen();
 			drawFrame.run();
 			updateState.run();
 		};
