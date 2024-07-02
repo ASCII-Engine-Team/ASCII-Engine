@@ -1,5 +1,5 @@
 public class Constants {
-	public static final int SCREEN_WIDTH = 192;
-	public static final int SCREEN_HEIGHT = 48;
-	public static final int FPS = 33;
+	public static final int SCREEN_WIDTH = 183;
+	public static final int SCREEN_HEIGHT = 45;
+	public static final int FPS = 30 ;
 }

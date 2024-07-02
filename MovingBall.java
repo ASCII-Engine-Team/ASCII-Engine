@@ -17,7 +17,7 @@ public class MovingBall {
 	static Runnable updateState;
 	
 	public static void main(String[] args) {
-		final int millisecondPause = Integer.parseInt(args[0]);
+		final int millisecondPause = 1000 / Constants.FPS;
 		secondsBetweenFrame = (double)millisecondPause / 1000.0;
 
 		// don't divide height by 2 because 
@@ -35,7 +35,7 @@ public class MovingBall {
 			String screen = "";
 			for (int i = 0; i < Constants.SCREEN_HEIGHT; i++) {
 				for (int j = 0; j < Constants.SCREEN_WIDTH; j++) {
-					if (distance((double)j, (double)i*2, ballCenterX, ballCenterY) <= ballRadius) {
+					if (Utility.distance((double)j, (double)i*2, ballCenterX, ballCenterY) <= ballRadius) {
 						screen += 'o';
 					} else {
 						screen += ' ';
@@ -70,7 +70,7 @@ public class MovingBall {
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		
 		final Runnable makeFrame = () -> {
-			clearScreen();
+			Utility.clearScreen();
 			drawFrame.run();
 			updateState.run();
 		};
@@ -78,16 +78,5 @@ public class MovingBall {
 		// schedule the frames
 		final ScheduledFuture<?> frameHandler = 
 			scheduler.scheduleAtFixedRate(makeFrame, 0, millisecondPause, MILLISECONDS);
-	}
-
-	public static void clearScreen() {  
-		System.out.print("\033[2J");  
-		System.out.flush();  
-	}  
-
-	private static double distance(double x1, double y1, double x2, double y2) {
-		double xDiff = x2 - x1;
-		double yDiff = y2 - y1;
-		return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
 	}
 }
