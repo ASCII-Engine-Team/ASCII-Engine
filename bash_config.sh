@@ -21,6 +21,7 @@ export _temp_CLASSPATH=".:$base_dir/libs"
 alias javac="javac -classpath $_temp_CLASSPATH"
 alias java="java -classpath $_temp_CLASSPATH"
 alias jdb="jdb -sourcepath $_temp_CLASSPATH"
+alias javaf="javac *.java; java "
 
 
 echo success

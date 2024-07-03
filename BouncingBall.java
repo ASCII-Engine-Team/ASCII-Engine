@@ -3,15 +3,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 
-public class MovingBall {
+public class BouncingBall {
 	private static double secondsBetweenFrame;
 	
 	private static double ballCenterX;
 	private static double ballCenterY;
 	private static double ballRadius;
 
-	private static double ballXSpeed;
-	private static double ballYSpeed;
+	private static double ballXChange;
+	private static double ballYChange;
 
 	static Runnable drawFrame;
 	static Runnable updateState;
@@ -25,10 +25,10 @@ public class MovingBall {
 		ballCenterX = Constants.SCREEN_WIDTH / 2;
 		ballCenterY = Constants.SCREEN_HEIGHT;
 
-		ballRadius = 10.0;
+		ballRadius = 40.0;
 
-		ballXSpeed = 10.0;
-		ballYSpeed = 10.0;
+		ballXChange = 13.7;
+		ballYChange = -21.3;
 
 		// insert code to draw each frame here
 		drawFrame = () -> {
@@ -49,7 +49,22 @@ public class MovingBall {
 		};
 
 		// insert any code to update the state of the animation here
-		updateState = () -> {};
+		updateState = () -> {
+			if (ballCenterX - ballRadius <= 0 && ballXChange < 0) {
+				ballXChange = -ballXChange;
+			} else if (ballCenterX + ballRadius >= Constants.SCREEN_WIDTH && ballXChange > 0) {
+				ballXChange = -ballXChange;
+			}
+
+			if (ballCenterY - ballRadius <= 0 && ballYChange < 0) {
+				ballYChange = -ballYChange;
+			} else if (ballCenterY + ballRadius >= Constants.SCREEN_HEIGHT * Constants.Y_STRETCH && ballYChange > 0) {
+				ballYChange = -ballYChange;
+			}
+
+			ballCenterX += ballXChange * secondsBetweenFrame;
+			ballCenterY += ballYChange * secondsBetweenFrame;
+		};
 
 		// initialize the scheduler
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
