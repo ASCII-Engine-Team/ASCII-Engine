@@ -25,7 +25,7 @@ public class BouncingBall {
 		ballCenterX = Constants.SCREEN_WIDTH / 2;
 		ballCenterY = Constants.SCREEN_HEIGHT;
 
-		ballRadius = 40.0;
+		ballRadius = 10.0;
 
 		ballXChange = 13.7;
 		ballYChange = -21.3;
@@ -33,10 +33,12 @@ public class BouncingBall {
 		// insert code to draw each frame here
 		drawFrame = () -> {
 			String screen = "";
-			for (int i = 0; i < Constants.SCREEN_HEIGHT; i++) {
-				for (int j = 0; j < Constants.SCREEN_WIDTH; j++) {
-					if (Utility.distance((double)j, (double)i*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius) {
-						screen += 'o';
+			for (int y = 0; y < Constants.SCREEN_HEIGHT; y++) {
+				for (int x = 0; x < Constants.SCREEN_WIDTH; x++) {
+					if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius) {
+						screen += 'O';
+					} else if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius + 0.5) {
+						screen += '·';
 					} else {
 						screen += ' ';
 					}
