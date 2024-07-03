@@ -13,8 +13,10 @@ public class MovingBall {
 	private static double ballXSpeed;
 	private static double ballYSpeed;
 
-	static Runnable drawFrame;
-	static Runnable updateState;
+	private static WASD input;
+
+	private static Runnable drawFrame;
+	private static Runnable updateState;
 	
 	public static void main(String[] args) {
 		final int millisecondPause = 1000 / Constants.FPS;
@@ -48,8 +50,23 @@ public class MovingBall {
 			System.out.print(screen.substring(0, screen.length() - 1));
 		};
 
+		input = new WASD();
+
 		// insert any code to update the state of the animation here
-		updateState = () -> {};
+		updateState = () -> {
+			if (input.getWPressed()) {
+				ballCenterY -= ballYSpeed * secondsBetweenFrame;
+			}
+			if (input.getSPressed()) {
+				ballCenterY += ballYSpeed * secondsBetweenFrame;
+			}
+			if (input.getAPressed()) {
+				ballCenterX -= ballXSpeed * secondsBetweenFrame;
+			}
+			if (input.getDPressed()) {
+				ballCenterX += ballXSpeed * secondsBetweenFrame;
+			}
+		};
 
 		// initialize the scheduler
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
