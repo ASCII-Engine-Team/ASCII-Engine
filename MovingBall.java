@@ -39,8 +39,6 @@ public class MovingBall {
 				for (int x = 0; x < Constants.SCREEN_WIDTH; x++) {
 					if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius) {
 						screen += 'O';
-					} else if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius + 0.5) {
-						screen += '·';
 					} else {
 						screen += ' ';
 					}

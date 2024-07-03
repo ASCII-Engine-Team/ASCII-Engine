@@ -36,9 +36,9 @@ public class BouncingBall {
 			for (int y = 0; y < Constants.SCREEN_HEIGHT; y++) {
 				for (int x = 0; x < Constants.SCREEN_WIDTH; x++) {
 					if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius) {
-						screen += 'O';
+						screen += '#';
 					} else if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius + 0.5) {
-						screen += '·';
+						screen += '•';
 					} else {
 						screen += ' ';
 					}
