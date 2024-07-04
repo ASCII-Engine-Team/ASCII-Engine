@@ -29,8 +29,8 @@ public class MovingBall {
 
 		ballRadius = 10.0;
 
-		ballXSpeed = 10.0;
-		ballYSpeed = 10.0;
+		ballXSpeed = 30.0;
+		ballYSpeed = 30.0;
 
 		// insert code to draw each frame here
 		drawFrame = () -> {
@@ -39,6 +39,8 @@ public class MovingBall {
 				for (int x = 0; x < Constants.SCREEN_WIDTH; x++) {
 					if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius) {
 						screen.append('@');
+					} else if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius + 0.5) {
+						screen.append('·');
 					} else {
 						screen.append(' ');
 					}
