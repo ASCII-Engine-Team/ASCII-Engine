@@ -32,22 +32,23 @@ public class BouncingBall {
 
 		// insert code to draw each frame here
 		drawFrame = () -> {
-			String screen = "";
+			StringBuilder screen = new StringBuilder(Constants.SCREEN_WIDTH * Constants.SCREEN_HEIGHT);
 			for (int y = 0; y < Constants.SCREEN_HEIGHT; y++) {
 				for (int x = 0; x < Constants.SCREEN_WIDTH; x++) {
 					if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius) {
-						screen += '#';
+						screen.append('@');
 					} else if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius + 0.5) {
-						screen += '•';
+						screen.append('•');
 					} else {
-						screen += ' ';
+						screen.append(' ');
 					}
 				}
 
-				screen += '\n';
+				screen.append('\n');
 			}
 
-			System.out.print(screen.substring(0, screen.length() - 1));
+			screen.setLength(screen.length() - 1);
+			System.out.print(screen);
 		};
 
 		// insert any code to update the state of the animation here
