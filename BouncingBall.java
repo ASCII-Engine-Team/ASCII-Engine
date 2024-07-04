@@ -38,7 +38,7 @@ public class BouncingBall {
 					if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius) {
 						screen.append('@');
 					} else if (Utility.distance((double)x, (double)y*Constants.Y_STRETCH, ballCenterX, ballCenterY) <= ballRadius + 0.5) {
-						screen.append('•');
+						screen.append('·');
 					} else {
 						screen.append(' ');
 					}
