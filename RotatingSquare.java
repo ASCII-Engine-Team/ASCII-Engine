@@ -20,7 +20,7 @@ public class RotatingSquare {
 
         squareCenterX = Constants.SCREEN_WIDTH / 2;
         squareCenterY = Constants.SCREEN_HEIGHT * Constants.Y_STRETCH / 2;
-        circumRadius = 4.0;
+        circumRadius = 20.0;
         rotatedBy = 0.0;
 
 		// insert code to draw each frame here
@@ -62,31 +62,32 @@ public class RotatingSquare {
 	}
 
     static boolean squareContains(double x, double y) {
-        double area = 2 * Math.pow(circumRadius, 2);
-        
-        double aX = squareCenterX + Math.cos(rotatedBy);
-        double aY = squareCenterY + Math.sin(rotatedBy);
+        double apothem = circumRadius / Math.sqrt(2);
+        double slopeFromCenter = (y - squareCenterY) / (x - squareCenterX);
+        double angleFromCenter = Math.atan(slopeFromCenter) % (Math.PI * 2);
+        double distanceFromCenter = Utility.distance(x, y, squareCenterX, squareCenterY);
 
-        double bX = squareCenterX + Math.cos(rotatedBy + Math.PI / 2);
-        double bY = squareCenterY + Math.sin(rotatedBy + Math.PI / 2);
+        if (distanceFromCenter <= apothem) {
+            return true;
+        } 
 
-        double cX = squareCenterX + Math.cos(rotatedBy + Math.PI);
-        double cY = squareCenterY + Math.sin(rotatedBy + Math.PI);
-
-        double dX = squareCenterX + Math.cos(rotatedBy - Math.PI / 2);
-        double dY = squareCenterY + Math.sin(rotatedBy - Math.PI / 2);
-
-        // abs(x1(y2 - y3) + x2(y3 - y1) + x3(y1 - y2)) / 2;
-        double triAreaSum = 0.0;
-        triAreaSum += Math.abs(aX * (bY - y) + bX * (y - aY) + x * (aY - bY)) / 2;
-        triAreaSum += Math.abs(bX * (cY - y) + cX * (y - bY) + x * (bY - cY)) / 2;
-        triAreaSum += Math.abs(cX * (dY - y) + dX * (y - cY) + x * (cY - dY)) / 2;
-        triAreaSum += Math.abs(dX * (aY - y) + aX * (y - dY) + x * (dY - aY)) / 2;
-
-        if (triAreaSum > area) {
-            return false;
+        double centerToEdgeDistance;
+        if (angleFromCenter < Math.PI / 4) {
+            centerToEdgeDistance = 0.7071 / Math.sin(Math.PI / 2 + angleFromCenter);
+        } else if (angleFromCenter < Math.PI * 3 / 4) {
+            centerToEdgeDistance = 0.7071 / Math.sin(Math.PI + angleFromCenter);
+        } else if (angleFromCenter < Math.PI * 5 / 4) {
+            centerToEdgeDistance = 0.7071 / Math.sin(3 * Math.PI / 2 + angleFromCenter);
+        } else if (angleFromCenter < Math.PI * 7 / 4) { 
+            centerToEdgeDistance = 0.7071 / Math.sin(Math.PI * 2 + angleFromCenter);
         } else {
+            centerToEdgeDistance = 0.7071 / Math.sin(Math.PI / 2 + angleFromCenter);
+        }
+
+        if (distanceFromCenter <= centerToEdgeDistance) {
             return true;
         }
+
+        return false;
     }
 }
