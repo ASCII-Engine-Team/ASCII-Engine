@@ -44,7 +44,7 @@ public class RotatingSquare {
 
 		// insert any code to update the state of the animation here
 		updateState = () -> {
-            rotatedBy += secondsBetweenFrame * Math.PI / 4;
+            rotatedBy += secondsBetweenFrame * Math.PI;
         };
 
 		// to initialize the scheduler
