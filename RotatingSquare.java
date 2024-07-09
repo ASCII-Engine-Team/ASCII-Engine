@@ -20,7 +20,7 @@ public class RotatingSquare {
 
         squareCenterX = Constants.SCREEN_WIDTH / 2;
         squareCenterY = Constants.SCREEN_HEIGHT * Constants.Y_STRETCH / 2;
-        circumRadius = 7.0;
+        circumRadius = 4.0;
         rotatedBy = 0.0;
 
 		// insert code to draw each frame here
@@ -43,7 +43,9 @@ public class RotatingSquare {
         };
 
 		// insert any code to update the state of the animation here
-		updateState = () -> {};
+		updateState = () -> {
+            rotatedBy += secondsBetweenFrame * Math.PI / 4;
+        };
 
 		// to initialize the scheduler
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -59,20 +61,20 @@ public class RotatingSquare {
 			scheduler.scheduleAtFixedRate(makeFrame, 0, millisecondPause, MILLISECONDS);
 	}
 
-    private static boolean squareContains(double x, double y) {
+    static boolean squareContains(double x, double y) {
         double area = 2 * Math.pow(circumRadius, 2);
         
-        double aX = Math.cos(rotatedBy);
-        double aY = Math.sin(rotatedBy);
+        double aX = squareCenterX + Math.cos(rotatedBy);
+        double aY = squareCenterY + Math.sin(rotatedBy);
 
-        double bX = Math.cos(rotatedBy + Math.PI / 2);
-        double bY = Math.sin(rotatedBy + Math.PI / 2);
+        double bX = squareCenterX + Math.cos(rotatedBy + Math.PI / 2);
+        double bY = squareCenterY + Math.sin(rotatedBy + Math.PI / 2);
 
-        double cX = Math.cos(rotatedBy + Math.PI);
-        double cY = Math.sin(rotatedBy + Math.PI);
+        double cX = squareCenterX + Math.cos(rotatedBy + Math.PI);
+        double cY = squareCenterY + Math.sin(rotatedBy + Math.PI);
 
-        double dX = Math.cos(rotatedBy - Math.PI / 2);
-        double dY = Math.sin(rotatedBy - Math.PI / 2);
+        double dX = squareCenterX + Math.cos(rotatedBy - Math.PI / 2);
+        double dY = squareCenterY + Math.sin(rotatedBy - Math.PI / 2);
 
         // abs(x1(y2 - y3) + x2(y3 - y1) + x3(y1 - y2)) / 2;
         double triAreaSum = 0.0;
