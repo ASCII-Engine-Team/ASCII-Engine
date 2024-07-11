@@ -10,6 +10,7 @@ public class RotatingSquare {
     static double rotatedBy;
 
     static double secondsBetweenFrame;
+    static boolean debug;
     
     static Runnable drawFrame;
 	static Runnable updateState;
@@ -17,6 +18,12 @@ public class RotatingSquare {
 	public static void main(String[] args) {
 		final int millisecondPause = 1000 / Constants.FPS;
 		secondsBetweenFrame = (double)millisecondPause / 1000.0;
+        
+        if (args.length > 0) {
+            debug = Boolean.parseBoolean(args[0]);
+        } else {
+            debug = false;
+        }
 
         squareCenterX = Constants.SCREEN_WIDTH / 2;
         squareCenterY = Constants.SCREEN_HEIGHT * Constants.Y_STRETCH / 2;
@@ -29,8 +36,10 @@ public class RotatingSquare {
             for (int y = 0; y < Constants.SCREEN_HEIGHT; y++) {
                 for (int x = 0; x < Constants.SCREEN_WIDTH; x++) {
                     if (squareContains((double)x, y * Constants.Y_STRETCH)) {
+                        if (debug) continue;
                         screen.append('@');
                     } else {
+                        if (debug) continue;
                         screen.append(' ');
                     }
                 }
@@ -45,13 +54,20 @@ public class RotatingSquare {
 		// insert any code to update the state of the animation here
 		updateState = () -> {
             rotatedBy += secondsBetweenFrame * Math.PI;
+            if (rotatedBy < 0) {
+                rotatedBy += Math.PI * 2;
+            } else if (rotatedBy >= Math.PI * 2) {
+                rotatedBy -= Math.PI * 2;
+            }
         };
 
 		// to initialize the scheduler
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-		final Runnable makeFrame = () -> {
-			Utility.clearScreen();
+        final Runnable makeFrame = () -> {
+			if (!debug) {
+                Utility.clearScreen();
+            }
 			drawFrame.run();
 			updateState.run();
 		};
@@ -62,26 +78,32 @@ public class RotatingSquare {
 	}
 
     static boolean squareContains(double x, double y) {
-        double apothem = circumRadius / Math.sqrt(2);
         double slopeFromCenter = (y - squareCenterY) / (x - squareCenterX);
-        double angleFromCenter = Math.atan(slopeFromCenter) % (Math.PI * 2);
         double distanceFromCenter = Utility.distance(x, y, squareCenterX, squareCenterY);
-
-        if (distanceFromCenter <= apothem) {
-            return true;
+        double angleFromCenter = Math.atan(slopeFromCenter) - rotatedBy;
+        
+        // makes sure angle is between 0 and 2pi
+        while (angleFromCenter < 0) {
+            angleFromCenter += Math.PI * 2;
+        } while (angleFromCenter >= 2 * Math.PI) {
+            angleFromCenter -= Math.PI * 2;
         } 
 
         double centerToEdgeDistance;
         if (angleFromCenter < Math.PI / 4) {
-            centerToEdgeDistance = 0.7071 / Math.sin(Math.PI / 2 + angleFromCenter);
+            centerToEdgeDistance = circumRadius * 0.7071 / Math.sin(Math.PI / 2 + angleFromCenter);
         } else if (angleFromCenter < Math.PI * 3 / 4) {
-            centerToEdgeDistance = 0.7071 / Math.sin(Math.PI + angleFromCenter);
+            centerToEdgeDistance = circumRadius * 0.7071/ Math.sin(angleFromCenter);
         } else if (angleFromCenter < Math.PI * 5 / 4) {
-            centerToEdgeDistance = 0.7071 / Math.sin(3 * Math.PI / 2 + angleFromCenter);
+            centerToEdgeDistance = circumRadius * 0.7071 / Math.sin(3 * Math.PI / 2 + angleFromCenter);
         } else if (angleFromCenter < Math.PI * 7 / 4) { 
-            centerToEdgeDistance = 0.7071 / Math.sin(Math.PI * 2 + angleFromCenter);
+            centerToEdgeDistance = circumRadius * 0.7071 / Math.sin(Math.PI + angleFromCenter);
         } else {
-            centerToEdgeDistance = 0.7071 / Math.sin(Math.PI / 2 + angleFromCenter);
+            centerToEdgeDistance = circumRadius * 0.7071 / Math.sin(Math.PI / 2 + angleFromCenter);
+        }
+
+        if (debug && distanceFromCenter < circumRadius + 1.0 && distanceFromCenter > circumRadius - 1.0) {
+            System.out.println(angleFromCenter + ", " + centerToEdgeDistance);
         }
 
         if (distanceFromCenter <= centerToEdgeDistance) {
