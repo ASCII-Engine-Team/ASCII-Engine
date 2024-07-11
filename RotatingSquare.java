@@ -10,6 +10,7 @@ public class RotatingSquare {
     static double rotatedBy;
 
     static double secondsBetweenFrame;
+    static boolean debug;
     
     static Runnable drawFrame;
 	static Runnable updateState;
@@ -17,10 +18,16 @@ public class RotatingSquare {
 	public static void main(String[] args) {
 		final int millisecondPause = 1000 / Constants.FPS;
 		secondsBetweenFrame = (double)millisecondPause / 1000.0;
+        
+        if (args.length > 0) {
+            debug = Boolean.parseBoolean(args[0]);
+        } else {
+            debug = false;
+        }
 
         squareCenterX = Constants.SCREEN_WIDTH / 2;
         squareCenterY = Constants.SCREEN_HEIGHT * Constants.Y_STRETCH / 2;
-        circumRadius = 4.0;
+        circumRadius = 20.0;
         rotatedBy = 0.0;
 
 		// insert code to draw each frame here
@@ -29,8 +36,10 @@ public class RotatingSquare {
             for (int y = 0; y < Constants.SCREEN_HEIGHT; y++) {
                 for (int x = 0; x < Constants.SCREEN_WIDTH; x++) {
                     if (squareContains((double)x, y * Constants.Y_STRETCH)) {
+                        if (debug) continue;
                         screen.append('@');
                     } else {
+                        if (debug) continue;
                         screen.append(' ');
                     }
                 }
@@ -45,13 +54,20 @@ public class RotatingSquare {
 		// insert any code to update the state of the animation here
 		updateState = () -> {
             rotatedBy += secondsBetweenFrame * Math.PI;
+            if (rotatedBy < 0) {
+                rotatedBy += Math.PI * 2;
+            } else if (rotatedBy >= Math.PI * 2) {
+                rotatedBy -= Math.PI * 2;
+            }
         };
 
 		// to initialize the scheduler
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-		final Runnable makeFrame = () -> {
-			Utility.clearScreen();
+        final Runnable makeFrame = () -> {
+			if (!debug) {
+                Utility.clearScreen();
+            }
 			drawFrame.run();
 			updateState.run();
 		};
@@ -62,31 +78,38 @@ public class RotatingSquare {
 	}
 
     static boolean squareContains(double x, double y) {
-        double area = 2 * Math.pow(circumRadius, 2);
+        double slopeFromCenter = (y - squareCenterY) / (x - squareCenterX);
+        double distanceFromCenter = Utility.distance(x, y, squareCenterX, squareCenterY);
+        double angleFromCenter = Math.atan(slopeFromCenter) - rotatedBy;
         
-        double aX = squareCenterX + Math.cos(rotatedBy);
-        double aY = squareCenterY + Math.sin(rotatedBy);
+        // makes sure angle is between 0 and 2pi
+        while (angleFromCenter < 0) {
+            angleFromCenter += Math.PI * 2;
+        } while (angleFromCenter >= 2 * Math.PI) {
+            angleFromCenter -= Math.PI * 2;
+        } 
 
-        double bX = squareCenterX + Math.cos(rotatedBy + Math.PI / 2);
-        double bY = squareCenterY + Math.sin(rotatedBy + Math.PI / 2);
-
-        double cX = squareCenterX + Math.cos(rotatedBy + Math.PI);
-        double cY = squareCenterY + Math.sin(rotatedBy + Math.PI);
-
-        double dX = squareCenterX + Math.cos(rotatedBy - Math.PI / 2);
-        double dY = squareCenterY + Math.sin(rotatedBy - Math.PI / 2);
-
-        // abs(x1(y2 - y3) + x2(y3 - y1) + x3(y1 - y2)) / 2;
-        double triAreaSum = 0.0;
-        triAreaSum += Math.abs(aX * (bY - y) + bX * (y - aY) + x * (aY - bY)) / 2;
-        triAreaSum += Math.abs(bX * (cY - y) + cX * (y - bY) + x * (bY - cY)) / 2;
-        triAreaSum += Math.abs(cX * (dY - y) + dX * (y - cY) + x * (cY - dY)) / 2;
-        triAreaSum += Math.abs(dX * (aY - y) + aX * (y - dY) + x * (dY - aY)) / 2;
-
-        if (triAreaSum > area) {
-            return false;
+        double centerToEdgeDistance;
+        if (angleFromCenter < Math.PI / 4) {
+            centerToEdgeDistance = circumRadius * 0.7071 / Math.sin(Math.PI / 2 + angleFromCenter);
+        } else if (angleFromCenter < Math.PI * 3 / 4) {
+            centerToEdgeDistance = circumRadius * 0.7071/ Math.sin(angleFromCenter);
+        } else if (angleFromCenter < Math.PI * 5 / 4) {
+            centerToEdgeDistance = circumRadius * 0.7071 / Math.sin(3 * Math.PI / 2 + angleFromCenter);
+        } else if (angleFromCenter < Math.PI * 7 / 4) { 
+            centerToEdgeDistance = circumRadius * 0.7071 / Math.sin(Math.PI + angleFromCenter);
         } else {
+            centerToEdgeDistance = circumRadius * 0.7071 / Math.sin(Math.PI / 2 + angleFromCenter);
+        }
+
+        if (debug && distanceFromCenter < circumRadius + 1.0 && distanceFromCenter > circumRadius - 1.0) {
+            System.out.println(angleFromCenter + ", " + centerToEdgeDistance);
+        }
+
+        if (distanceFromCenter <= centerToEdgeDistance) {
             return true;
         }
+
+        return false;
     }
 }
